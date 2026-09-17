@@ -449,12 +449,36 @@ const CSS = `
 }
 `
 
+function ensureKeybindOverrides() {
+  try {
+    const raw = localStorage.getItem('hermes.desktop.keybinds')
+    const overrides = raw ? JSON.parse(raw) : {}
+    let changed = false
+
+    // Remap view.toggleRightSidebar away from mod+j to avoid stealing Ctrl+J
+    if (
+      !overrides['view.toggleRightSidebar'] ||
+      overrides['view.toggleRightSidebar'].includes('mod+j') ||
+      overrides['view.toggleRightSidebar'].includes('ctrl+j')
+    ) {
+      overrides['view.toggleRightSidebar'] = ['mod+shift+j']
+      changed = true
+    }
+
+    if (changed) {
+      localStorage.setItem('hermes.desktop.keybinds', JSON.stringify(overrides))
+    }
+  } catch {}
+}
+
 export default {
   id: ID,
   name: 'Vim Navigation',
   description: 'Modal Vim keyboard navigation for Hermes Desktop (Normal & Insert modes, j/k scrolling, tab switching, and composer focus)',
   defaultEnabled: true,
   register(ctx) {
+    ensureKeybindOverrides()
+
     // Inject custom styling
     const style = document.createElement('style')
     style.id = 'hermes-vim-nav-styles'
