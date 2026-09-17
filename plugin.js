@@ -257,7 +257,7 @@ function VimHelpModal() {
           h('div', { className: 'vim-section-title' }, 'Navigation & Panels'),
           h(ShortCutRow, { keys: ['/'], desc: 'Focus composer input' }),
           h(ShortCutRow, { keys: [':'], desc: 'Open Command Palette' }),
-          h(ShortCutRow, { keys: ['Ctrl+j', 'Ctrl+k'], desc: 'Palette: Select next / previous' }),
+          h(ShortCutRow, { keys: ['Ctrl+j', 'Ctrl+k'], desc: 'Palette / Model Menu: Select next / previous' }),
           h(ShortCutRow, { keys: ['b'], desc: 'Toggle Left Sidebar' }),
           h(ShortCutRow, { keys: ['?'], desc: 'Toggle this cheat sheet' })
         )
@@ -557,13 +557,24 @@ export default {
       const mode = $vimMode.get()
       const target = e.target
 
-      // ─── COMMAND PALETTE & DROPDOWN NAVIGATION (Ctrl+J / Ctrl+K) ──────────
+      // ─── COMMAND PALETTE & MODEL PICKER NAVIGATION (Ctrl+J / Ctrl+K) ──────
       const cmdkInput = document.querySelector('[data-slot="command-input"]')
       const isCmdkActive = Boolean(
         cmdkInput && (
           document.activeElement === cmdkInput ||
           cmdkInput.contains(document.activeElement) ||
           document.activeElement?.closest('[data-slot="command"], [cmdk-root]')
+        )
+      )
+
+      const modelSearchInput = document.querySelector(
+        '[data-slot="dropdown-menu-search"] input, input[placeholder*="Search models"], input[aria-label*="Search models"]'
+      )
+      const isModelMenuActive = Boolean(
+        modelSearchInput && (
+          document.activeElement === modelSearchInput ||
+          modelSearchInput.contains(document.activeElement) ||
+          document.querySelector('[role="menu"]')
         )
       )
 
@@ -595,6 +606,71 @@ export default {
             cancelable: true
           }))
           return
+        }
+      }
+
+      if (isModelMenuActive && (e.ctrlKey || e.metaKey)) {
+        const key = e.key.toLowerCase()
+        if (key === 'j' || key === 'n') {
+          e.preventDefault()
+          e.stopImmediatePropagation()
+          const targetInput = modelSearchInput || document.activeElement
+          targetInput.dispatchEvent(new KeyboardEvent('keydown', {
+            key: 'ArrowDown',
+            code: 'ArrowDown',
+            keyCode: 40,
+            which: 40,
+            bubbles: true,
+            cancelable: true
+          }))
+          return
+        }
+
+        if (key === 'k' || key === 'p') {
+          e.preventDefault()
+          e.stopImmediatePropagation()
+          const targetInput = modelSearchInput || document.activeElement
+          targetInput.dispatchEvent(new KeyboardEvent('keydown', {
+            key: 'ArrowUp',
+            code: 'ArrowUp',
+            keyCode: 38,
+            which: 38,
+            bubbles: true,
+            cancelable: true
+          }))
+          return
+        }
+      }
+
+      // If focus is on a menu item in the Model Menu, allow bare j and k
+      if (document.activeElement?.getAttribute('role') === 'menuitem' || document.activeElement?.closest('[role="menu"]')) {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          if (e.key === 'j') {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            document.activeElement.dispatchEvent(new KeyboardEvent('keydown', {
+              key: 'ArrowDown',
+              code: 'ArrowDown',
+              keyCode: 40,
+              which: 40,
+              bubbles: true,
+              cancelable: true
+            }))
+            return
+          }
+          if (e.key === 'k') {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            document.activeElement.dispatchEvent(new KeyboardEvent('keydown', {
+              key: 'ArrowUp',
+              code: 'ArrowUp',
+              keyCode: 38,
+              which: 38,
+              bubbles: true,
+              cancelable: true
+            }))
+            return
+          }
         }
       }
 
