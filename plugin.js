@@ -77,11 +77,20 @@ function smoothScrollBy(delta) {
   }
 }
 
+function unlockStickToBottom(vp) {
+  if (vp) {
+    // use-stick-to-bottom requires a wheel event with deltaY < 0 to escape the bottom lock
+    vp.dispatchEvent(new WheelEvent('wheel', { deltaY: -100, bubbles: true, cancelable: true }))
+  }
+}
+
 function scrollDown(amount = 90) {
   smoothScrollBy(amount)
 }
 
 function scrollUp(amount = 90) {
+  const vp = getActiveViewport()
+  unlockStickToBottom(vp)
   smoothScrollBy(-amount)
 }
 
@@ -92,6 +101,7 @@ function scrollToTop() {
     rafId = null
   }
   const vp = getActiveViewport()
+  unlockStickToBottom(vp)
   if (vp) vp.scrollTop = 0
 }
 
@@ -510,9 +520,20 @@ export default {
       }, 50)
     }
 
+    // Clicking anywhere on the chat transcript, background, or window (outside editable inputs)
+    // cleanly removes focus from the composer and returns to NORMAL mode
+    const onWindowPointerDown = (e) => {
+      if (!isEditable(e.target) && isEditable(document.activeElement)) {
+        document.activeElement.blur()
+        $vimMode.set('NORMAL')
+      }
+    }
+
+    window.addEventListener('pointerdown', onWindowPointerDown, { capture: true })
     window.addEventListener('focusin', onFocusIn)
     window.addEventListener('focusout', onFocusOut)
     ctx.onDispose(() => {
+      window.removeEventListener('pointerdown', onWindowPointerDown, { capture: true })
       window.removeEventListener('focusin', onFocusIn)
       window.removeEventListener('focusout', onFocusOut)
     })
