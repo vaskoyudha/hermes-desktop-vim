@@ -280,7 +280,7 @@ function VimStatusBar() {
     ? (pending ? `NORMAL (${pending}…)` : 'NORMAL')
     : 'INSERT'
 
-  return h('div', { style: { display: 'inline-flex', alignItems: 'center' } },
+  return h('div', { className: 'vim-status-center-wrap' },
     h('div', {
       className: 'vim-status-badge',
       'data-mode': mode,
@@ -295,6 +295,17 @@ function VimStatusBar() {
 }
 
 const CSS = `
+.vim-status-center-wrap {
+  position: fixed;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
 .vim-status-badge {
   display: inline-flex;
   align-items: center;
@@ -303,21 +314,24 @@ const CSS = `
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  padding: 1px 8px;
+  padding: 1px 9px;
+  height: 18px;
+  box-sizing: border-box;
   border-radius: 4px;
   cursor: pointer;
   user-select: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   transition: all 0.15s ease;
 }
 .vim-status-badge[data-mode="NORMAL"] {
-  background: color-mix(in srgb, var(--ui-accent, #3b82f6) 18%, transparent);
+  background: color-mix(in srgb, var(--ui-accent, #3b82f6) 22%, var(--card, #181825));
   color: var(--ui-accent, #38bdf8);
-  border: 1px solid color-mix(in srgb, var(--ui-accent, #3b82f6) 38%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ui-accent, #3b82f6) 45%, transparent);
 }
 .vim-status-badge[data-mode="INSERT"] {
-  background: color-mix(in srgb, #22c55e 18%, transparent);
+  background: color-mix(in srgb, #22c55e 22%, var(--card, #181825));
   color: #22c55e;
-  border: 1px solid color-mix(in srgb, #22c55e 38%, transparent);
+  border: 1px solid color-mix(in srgb, #22c55e 45%, transparent);
 }
 .vim-mode-glyph {
   font-size: 9px;
