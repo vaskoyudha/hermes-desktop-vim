@@ -1,0 +1,21 @@
+{
+  "name": "hermes-desktop-vim",
+  "version": "1.0.0",
+  "description": "Modal Vim keyboard navigation plugin for Hermes Desktop",
+  "main": "plugin.js",
+  "keywords": [
+    "hermes",
+    "hermes-agent",
+    "hermes-desktop",
+    "vim",
+    "neovim",
+    "keybindings",
+    "navigation"
+  ],
+  "author": "Vasco Yudha <vaskoyudha@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vaskoyudha/hermes-desktop-vim.git"
+  }
+}
